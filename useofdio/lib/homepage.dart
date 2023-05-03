@@ -10,6 +10,7 @@ class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
+
 class _HomePageState extends State<HomePage> {
   List<UniversityModel> universityData = [];
   @override
@@ -27,7 +28,14 @@ class _HomePageState extends State<HomePage> {
       var response = await Dio()
           .get('http://universities.hipolabs.com/search?country=United+States');
 
-      print(response);
+      List<UniversityModel> data = [];
+
+      for (var item in response.data) {
+        data.add(UniversityModel.fromJson(item));
+      }
+      setState(() {
+        universityData = data;
+      });
     } catch (ex) {
       print(ex.toString());
     }
@@ -40,7 +48,31 @@ class _HomePageState extends State<HomePage> {
       body: ListView.builder(
           itemCount: universityData.length,
           itemBuilder: (context, index) {
-            return const Text("data");
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Text((index + 1).toString()),
+                  ),
+                  Expanded(
+                      flex: 4,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(universityData[index].name.toString()),
+                          Text(universityData[index].domains.toString()),
+                        ],
+                      )),
+
+                      Expanded(
+                        flex: 3,
+                        child: Text(universityData[index].country.toString()),),
+                ],
+              ),
+            );
           }),
     );
   }
